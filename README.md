@@ -9,12 +9,15 @@ This project is for Propellerhead customer website. This is a Single Page Applic
 4. Able to update customer status from a dropdown list, after submit, database record and the customer table will be updated with the new status. 
 5. Able to add notes to each customer. 
 
-## file structure 
+## Website entry 
+-- TODO updated
+
+## File structure 
 * app.html : single html page for displaying customer table and detail
 * app.js : main program to support the logic of customers
 * table.js: program of handling table related processing
 
-## technology used
+## Technology used
 ### Frontend
 * Javascript ES6 : program language.
 * Bootstrap : used as framework and layout.
