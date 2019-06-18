@@ -11,9 +11,9 @@ This project is for Propellerhead customer website. This is a Single Page Applic
 
 ## file structure 
 src/
-... app.html : single html page for displaying customer table and detail
-... app.js : main program to support the logic of customers
-... table.js: program of handling table related processing
+..* app.html : single html page for displaying customer table and detail
+..* app.js : main program to support the logic of customers
+..* table.js: program of handling table related processing
 
 ## technology used
 ### Frontend
