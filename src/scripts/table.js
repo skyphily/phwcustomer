@@ -2,8 +2,7 @@ import get from 'lodash.get';
 import dayjs from 'dayjs';
 
 const DATE_FORMAT = 'DD-MM-YYYY hh:mmA';
-const TABLE_FIELDS = [
-  {
+const TABLE_FIELDS = [{
     FIELD_NAME: 'name',
     HEADER_NAME: 'Customer Name'
   },
@@ -22,24 +21,15 @@ const TABLE_FIELDS = [
   {
     FIELD_NAME: 'createDate',
     HEADER_NAME: 'Create On',
-    FIELD_TYPE: 'Date'
+    FIELD_TYPE: 'DATE'
+  },
+  {
+    FIELD_NAME: 'note',
+    HEADER_NAME: '',
+    FIELD_TYPE: 'NOTE'
   }
 ];
 
-const SORT_CONST = {
-  UP: {
-    icon: 'fa-sort-up',
-    desc: false
-  },
-  DOWN: {
-    icon: 'fa-sort-down',
-    desc: true
-  },
-  NORMAL: {
-    icon: 'fa-sort',
-    desc: false
-  }
-};
 
 /**
  * map table display data from database data
@@ -47,9 +37,11 @@ const SORT_CONST = {
  * @param {*} dbData
  */
 const mapTableData = (id, dbData) => {
-  const row = { id: id };
+  const row = {
+    id: id
+  };
   for (let field of TABLE_FIELDS) {
-    if ('Date' === field.FIELD_TYPE) {
+    if ('DATE' === field.FIELD_TYPE) {
       //convert date:
       const time = dbData[(dbData, field.FIELD_NAME)];
       if (time) {
@@ -74,10 +66,11 @@ const generateTable = (tableData, param) => {
   //generate header
   const thRow = `<tr class="table-secondary">${TABLE_FIELDS.map(
     field =>
+      field.FIELD_TYPE!=='NOTE'?
       `<th id="th_${field.FIELD_NAME}" scope="col">${
         field.HEADER_NAME
-      } <i class="fas fa-sort"></i></th>`
-  ).join('')}<th></th></tr>`;
+      } <i class="fas fa-sort"></i></th>`:''
+  ).join('')} <th></th></tr>`;
   const tbody = generateTBody(tableData, param);
   return `<table class="table table-bordered table-sm table-striped"><thead>${thRow}</thead><tbody>${tbody}</tbody></table>`;
 };
@@ -88,15 +81,15 @@ const generateTable = (tableData, param) => {
  */
 const generateTBody = (tableData, param) => {
   //generate body
-  const tbody = tableData
-    ? tableData
-        .map(row => {
-          return `<tr id="${row.id}" cope="row" data-toggle="modal" data-target="#detailModal">${TABLE_FIELDS.map(
-            field => `<td>${row[field.FIELD_NAME]}</td>`
-          ).join('')} <td class="notes "><i class="fas fa-sticky-note text-secondary" data-toggle="tooltip" trigger="hover" title="${row['note']||'Add Note'}"></i></td></tr>`;
-        })
-        .join('')
-    : '';
+  const tbody = tableData ?
+    tableData
+    .map(row => {
+      return `<tr id="${row.id}" cope="row" data-toggle="modal" data-target="#detailModal">${TABLE_FIELDS.map(
+            field => (field.FIELD_TYPE!=='NOTE')?`<td>${row[field.FIELD_NAME]}</td>`:''
+        ).join('')} ${row['note']?`<td class="notes "><i class="fas fa-sticky-note text-secondary" data-toggle="tooltip" trigger="hover" title="${row['note']}"></i></td></tr>`:'<td></td>'}`;
+    })
+    .join('') :
+    '';
   return tbody;
 };
 
@@ -138,4 +131,10 @@ const sortTableData = (tableData, sortParam) => {
   }
 };
 
-export { mapTableData, generateTable, generateTBody, filterTableData, sortTableData };
+export {
+  mapTableData,
+  generateTable,
+  generateTBody,
+  filterTableData,
+  sortTableData
+};

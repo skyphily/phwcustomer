@@ -62,7 +62,8 @@ import {
       tableDiv.innerHTML = table;
       //add sort event ;
       const thArr = tableDiv.querySelectorAll('th');
-      thArr.forEach(th => th.addEventListener('click', app.sort));
+      thArr.forEach(th => th.innerHTML!==''?th.addEventListener('click', app.sort):'');
+      
     } else {
       const tbody = tableDiv.querySelector('tbody');
       if (tbody) {
@@ -144,7 +145,7 @@ import {
     icon.classList.replace(getIconName(oldIconName), getIconName(newIconName));
   };
 
-  app.setDetail = target => {
+  app.setDetail = target => { 
     if (app.tableData) {
       const customer = app.tableData.find(item => item.id === target.id);
       if (customer) {
@@ -154,6 +155,8 @@ import {
         document.querySelector('#dtEmail').value = customer['contact.email'];
         document.querySelector('#dtCreationDate').value = customer['createDate'];
         document.querySelector('#dtStatus').value = customer['status'];
+        document.querySelector('#dtNote').value = customer['note'] ||'';
+
       }
     }
   };
@@ -162,16 +165,18 @@ import {
    */
   app.submitChange = async evt => {
     const status = document.querySelector('#dtStatus').value;
+    const note =  document.querySelector('#dtNote').value;
     const id = document.querySelector('#dtCustomerId').value;
-
+    console.log(note);
     if (id) {
+      const updateData = { status: status, note:note };
       try {
         await db
           .collection('customers')
           .doc(id)
-          .set({ status: status }, { merge: true });
+          .set(updateData, { merge: true });
 
-        app.updateDisplayTable({ id: id, status: status });
+        app.updateDisplayTable({ id: id, ...updateData});
       } catch (err) {
         console.log(err);
       }
@@ -183,7 +188,9 @@ import {
     if (app.tableData) {
       const customer = app.tableData.find(item => item.id === newCustomer.id);
       if (customer) {
+        console.log(customer,newCustomer);
         customer.status = newCustomer.status;
+        customer.note = newCustomer.note;
         //filter table data if filter string exists
         const filter = document.querySelector('#iFilter');
         let data = app.tableData;
