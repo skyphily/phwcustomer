@@ -55,15 +55,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/philywu/miapp.template.git"
+    "url": "git+https://github.com/skyphily/phwcustomer.git"
   },
   "keywords": [
     "chart"
   ],
   "author": "Phily Wu",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/philywu/michart/issues"
-  },
-  "homepage": "https://github.com/philywu/miapp.template#readme"
+ 
+  "homepage": "https://github.com/skyphily/phwcustomer"
 }
