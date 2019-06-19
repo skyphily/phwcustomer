@@ -7,15 +7,16 @@ This project is for Propellerhead customer website. This is a Single Page Applic
 2. Able to filter the table record when type text in filter input box. When any field in a row matches the filter text, the row will be displayed; otherwise the row will be hidden.
 3. Able to view customer detail information along with existing notes in a modal dialog.
 4. Able to update customer status from a dropdown list, after submit, database record and the customer table will be updated with the new status. 
-5. Able to add notes to each customer. 
+5. Able to add note to each customer and display note as a tooltip in table. 
 
 ## Website entry 
--- TODO updated
+https://phwcustomer.web.app/
 
 ## File structure 
 * app.html : single html page for displaying customer table and detail
-* app.js : main program to support the logic of customers
-* table.js: program of handling table related processing
+* scripts/app.js : main program to support the logic of customers
+* scripts/table.js: program of handling table related processing
+* scss/_main.scss: main scss file for page.
 
 ## Technology used
 ### Frontend
