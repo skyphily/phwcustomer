@@ -1,6 +1,6 @@
 # Propellerhead Customer program
 
-This project is for Propellerhead customer website. This is a Single Page Application which will show
+This project is for Propellerhead customer website. This is a Single Page Application which will show customer list and details
 
 ## Implemented function list:
 1. Able to read customers from backend database and display as a table.
@@ -13,27 +13,27 @@ This project is for Propellerhead customer website. This is a Single Page Applic
 https://phwcustomer.web.app/
 
 ## File structure 
-* app.html : single html page for displaying customer table and detail
-* scripts/app.js : main program to support the logic of customers
-* scripts/table.js: program of handling table related processing
-* scss/_main.scss: main scss file for page.
+* app.html : Single html page for displaying customer table and detail
+* scripts/app.js : Main program to support the logic of customers
+* scripts/table.js: Program of handling table related processing
+* scss/_main.scss: Main scss file for page.
 
 ## Technology used
 ### Frontend
-* Javascript ES6 : program language.
-* Bootstrap : used as framework and layout.
-* SCSS: define css style.
-* Webpack: convert, pack pages into bundle for release.
+* Javascript ES6: Program language.
+* Bootstrap: Used as framework and layout.
+* SCSS: Define css style.
+* Webpack: Convert, pack pages into bundle for release.
 
 ### Backend
-* Firebase firestore : no-sql database to store the customer data
-* Firebase hosting : web hosting for the application
+* Firebase firestore: No-sql database to store the customer data
+* Firebase hosting: Web hosting for the application
 
 ### Others
 * ESlint: Grammar checking and formatting 
-* Git : Version management
+* Git: Version management
 * dayjs: Format date for creating date
-* lodash.get :get value from complicated key. 
+* lodash.get: Get value from complicated key. 
 
 ## Function did not implemented
 
