@@ -1,35 +1,42 @@
 import get from 'lodash.get';
 import dayjs from 'dayjs';
 
+//Constant definition
 const DATE_FORMAT = 'DD-MM-YYYY hh:mmA';
-const TABLE_FIELDS = [{
+
+const CUSTOMER_FILEDS = [{
     FIELD_NAME: 'name',
-    HEADER_NAME: 'Customer Name'
+    TABLE_HEADER_NAME: 'Customer Name',
+    DETAIL_FIELD_NAME:'dtName'
   },
   {
     FIELD_NAME: 'contact.phone',
-    HEADER_NAME: 'Phone'
+    TABLE_HEADER_NAME: 'Phone',
+    DETAIL_FIELD_NAME:'dtPhone'
   },
   {
     FIELD_NAME: 'contact.email',
-    HEADER_NAME: 'Email'
+    TABLE_HEADER_NAME: 'Email',
+    DETAIL_FIELD_NAME:'dtEmail'
   },
   {
     FIELD_NAME: 'status',
-    HEADER_NAME: 'Status'
+    TABLE_HEADER_NAME: 'Status',
+    DETAIL_FIELD_NAME:'dtStatus'
   },
   {
     FIELD_NAME: 'createDate',
-    HEADER_NAME: 'Create On',
-    FIELD_TYPE: 'DATE'
+    TABLE_HEADER_NAME: 'Create On',
+    FIELD_TYPE: 'DATE',
+    DETAIL_FIELD_NAME:'dtCreationDate'
   },
   {
     FIELD_NAME: 'note',
-    HEADER_NAME: '',
-    FIELD_TYPE: 'NOTE'
+    TABLE_HEADER_NAME: '',
+    FIELD_TYPE: 'NOTE',
+    DETAIL_FIELD_NAME:'dtNote'
   }
 ];
-
 
 /**
  * map table display data from database data
@@ -40,7 +47,7 @@ const mapTableData = (id, dbData) => {
   const row = {
     id: id
   };
-  for (let field of TABLE_FIELDS) {
+  for (let field of CUSTOMER_FILEDS) {
     if ('DATE' === field.FIELD_TYPE) {
       //convert date:
       const time = dbData[(dbData, field.FIELD_NAME)];
@@ -58,33 +65,35 @@ const mapTableData = (id, dbData) => {
 /**
  * Generate table String with table data
  * @param {*} tableData table data array
- * @param {*} param param
+ * @param {*} param param (not used yet)
  */
 
 const generateTable = (tableData, param) => {
   //const table = document.createElement('table');
   //generate header
-  const thRow = `<tr class="table-secondary">${TABLE_FIELDS.map(
+  const thRow = `<tr class="table-secondary">${CUSTOMER_FILEDS.map(
     field =>
       field.FIELD_TYPE!=='NOTE'?
       `<th id="th_${field.FIELD_NAME}" scope="col">${
-        field.HEADER_NAME
+        field.TABLE_HEADER_NAME
       } <i class="fas fa-sort"></i></th>`:''
   ).join('')} <th></th></tr>`;
+  //generate tbody
   const tbody = generateTBody(tableData, param);
+  //generate whole table
   return `<table class="table table-bordered table-sm table-striped"><thead>${thRow}</thead><tbody>${tbody}</tbody></table>`;
 };
 /**
- * generate TBody only
- * @param {*} tableData
- * @param {*} param
+ * generate TBody only, can be called and update separately
+ * @param {*} tableData table data array
+ * @param {*} param param (not used yet)
  */
 const generateTBody = (tableData, param) => {
   //generate body
   const tbody = tableData ?
     tableData
     .map(row => {
-      return `<tr id="${row.id}" cope="row" data-toggle="modal" data-target="#detailModal">${TABLE_FIELDS.map(
+      return `<tr id="${row.id}" cope="row" data-toggle="modal" data-target="#detailModal">${CUSTOMER_FILEDS.map(
             field => (field.FIELD_TYPE!=='NOTE')?`<td>${row[field.FIELD_NAME]}</td>`:''
         ).join('')} ${row['note']?`<td class="notes "><i class="fas fa-sticky-note text-secondary" data-toggle="tooltip" trigger="hover" title="${row['note']}"></i></td></tr>`:'<td></td>'}`;
     })
@@ -101,7 +110,7 @@ const generateTBody = (tableData, param) => {
 const filterTableData = (tableData, filterStr) => {
   if (tableData) {
     return tableData.filter(item => {
-      for (let field of TABLE_FIELDS) {
+      for (let field of CUSTOMER_FILEDS) {
         // if any of the fields include filter, return true;
         const fieldVal = item[field.FIELD_NAME];
         if (fieldVal && fieldVal.toLowerCase().includes(filterStr.toLowerCase())) {
@@ -121,7 +130,7 @@ const filterTableData = (tableData, filterStr) => {
  */
 
 const sortTableData = (tableData, sortParam) => {
-  if (tableData && tableData.length > 0) {
+  if (sortParam.field && tableData && tableData.length > 0) {
     tableData.sort((a, b) => {
       const field = sortParam.field;
       let result = a[field] > b[field] ? 1 : -1;
@@ -136,5 +145,6 @@ export {
   generateTable,
   generateTBody,
   filterTableData,
-  sortTableData
+  sortTableData,
+  CUSTOMER_FILEDS
 };

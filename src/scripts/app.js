@@ -1,7 +1,5 @@
 // import '@babel/polyfill';
 import 'bootstrap';
-var $ = require('jquery');
-
 import '../scss/custom.scss';
 
 import firebase from 'firebase/app';
@@ -12,16 +10,21 @@ import {
   generateTable,
   filterTableData,
   generateTBody,
-  sortTableData
+  sortTableData,
+  CUSTOMER_FILEDS
 } from './table';
 
+var $ = require('jquery');
+
 {
+  //firebase config file
   var firebaseConfig = {
     apiKey: 'AIzaSyBb8iIBihoN3aLstT5Pe5s3q0AevYxuNRw',
     databaseURL: 'https://phwcustomer.firebaseio.com',
     projectId: 'phwcustomer',
     appId: '1:374797303776:web:929bf7d114a73ba5'
   };
+  //initial firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
@@ -42,10 +45,8 @@ import {
   app.loadCustomers = async () => {
     const customerTableData = [];
     const customers = await db.collection('customers').get();
-    console.log(customers);
+    //generate display data
     customers.forEach(doc => {
-      // console.log(`${doc.id} => ${doc.data()}`);
-      // const customer = doc.data();
       customerTableData.push(mapTableData(doc.id, doc.data()));
     });
     return customerTableData;
@@ -57,38 +58,40 @@ import {
   app.renderTable = (dataArray, initial) => {
     const tableDiv = document.querySelector('#customerTable');
 
-    if (initial) {
+    if (initial) { //generate table header only on first time render
       const table = generateTable(dataArray);
       tableDiv.innerHTML = table;
       //add sort event ;
       const thArr = tableDiv.querySelectorAll('th');
-      thArr.forEach(th => th.innerHTML!==''?th.addEventListener('click', app.sort):'');
-      
+      thArr.forEach(th => (th.innerHTML !== '' ? th.addEventListener('click', app.sort) : ''));
     } else {
+      //generate table body, can be called multiple tiles.
       const tbody = tableDiv.querySelector('tbody');
       if (tbody) {
         tbody.innerHTML = generateTBody(dataArray);
       }
     }
-     $('[data-toggle="tooltip"]').tooltip({
-       'placement': 'left',
-      'template':'<div class="tooltip" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>'});
+    //add tool tips
+    $('[data-toggle="tooltip"]').tooltip({
+      placement: 'left',
+      template:
+        '<div class="tooltip" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>'
+    });
   };
 
   /**
    * filter action
    */
   app.filter = e => {
+    //get filter text
     const filterText = e.target.value;
     if (filterText && filterText.length > 0) {
       const newTableData = filterTableData(app.tableData, filterText);
-      //if (newTableData.length != app.tableData.length) {
       //re-render the table data
       sortTableData(newTableData, app.sortParam);
       app.renderTable(newTableData);
-      //}
     } else {
-      //re render when length is 0
+      //re render when length is back to 0
       sortTableData(app.tableData, app.sortParam);
       app.renderTable(app.tableData);
     }
@@ -99,13 +102,16 @@ import {
    */
   app.sort = evt => {
     let th = evt.target;
+    //make sure get the th element
     if (th.tagName != 'TH') {
       th = th.parentNode;
     }
+    //display correct icons in all th.
     const iconList = th.parentNode.querySelectorAll('th i');
     for (let icon of iconList) {
       if (icon.parentNode == th) {
         // to process the pressed TH
+        //remove the first 3 chars 'th_' and compare
         if (th.id.slice(3) == app.sortParam.field) {
           //process the same field that just pressed last time
           app.sortParam.desc
@@ -140,23 +146,28 @@ import {
     app.renderTable(data);
   };
 
+  /**
+   * show with correct FA icons
+   */
   app.changeIcon = (icon, oldIconName, newIconName) => {
     const getIconName = name => 'fa-sort' + (name.length > 0 ? '-' + name : '');
     icon.classList.replace(getIconName(oldIconName), getIconName(newIconName));
   };
 
-  app.setDetail = target => { 
+  /**
+   * set customer detail in modal dialog
+   */
+  app.setDetail = target => {
     if (app.tableData) {
+      //get customer by customer ID dfined in table row
       const customer = app.tableData.find(item => item.id === target.id);
       if (customer) {
+        //set values 
         document.querySelector('#dtCustomerId').value = customer['id'];
-        document.querySelector('#dtName').value = customer['name'];
-        document.querySelector('#dtPhone').value = customer['contact.phone'];
-        document.querySelector('#dtEmail').value = customer['contact.email'];
-        document.querySelector('#dtCreationDate').value = customer['createDate'];
-        document.querySelector('#dtStatus').value = customer['status'];
-        document.querySelector('#dtNote').value = customer['note'] ||'';
-
+        CUSTOMER_FILEDS.map(field =>{
+          document.querySelector(`#${field.DETAIL_FIELD_NAME}`).value = customer[field.FIELD_NAME];
+        });
+        
       }
     }
   };
@@ -165,30 +176,34 @@ import {
    */
   app.submitChange = async evt => {
     const status = document.querySelector('#dtStatus').value;
-    const note =  document.querySelector('#dtNote').value;
+    const note = document.querySelector('#dtNote').value;
     const id = document.querySelector('#dtCustomerId').value;
-    console.log(note);
     if (id) {
-      const updateData = { status: status, note:note };
+      //set update json data
+      const updateData = { status: status, note: note };
+      // do update
       try {
         await db
           .collection('customers')
           .doc(id)
           .set(updateData, { merge: true });
-
-        app.updateDisplayTable({ id: id, ...updateData});
+        //update display table
+        app.updateDisplayTable({ id: id, ...updateData });
       } catch (err) {
         console.log(err);
       }
     }
-
-    console.log('here', status);
   };
+
+  /**
+   * update display table.
+   */
   app.updateDisplayTable = newCustomer => {
     if (app.tableData) {
+      //find the customer in table data
       const customer = app.tableData.find(item => item.id === newCustomer.id);
       if (customer) {
-        console.log(customer,newCustomer);
+        //update corresponding fields.
         customer.status = newCustomer.status;
         customer.note = newCustomer.note;
         //filter table data if filter string exists
@@ -197,15 +212,22 @@ import {
         if (filter.value.length > 0) {
           data = filterTableData(app.tableData, filter.value);
         }
+        //sort table with current sort setting
         sortTableData(data, app.sortParam);
         // re-render table
         app.renderTable(data);
       }
     }
   };
+  /**
+   * init app page
+   */
   app.init = async () => {
+    //load customers from DB and set to app.tableData
     app.tableData = await app.loadCustomers();
+    // intial render table
     app.renderTable(app.tableData, true);
+    //set events
     app.setEvent();
   };
   /**
@@ -216,15 +238,11 @@ import {
     const inputFilter = document.querySelector('#iFilter');
     //set input method
     inputFilter.oninput = app.filter;
-
-    $('#detailModal').on('show.bs.modal', evt => app.setDetail(evt.relatedTarget));
-
+    //set modal dialog submit method
     const btnSubmit = document.querySelector('#bSubmit');
     btnSubmit.onclick = app.submitChange;
-    $('[data-toggle="tooltip"]').on('show.bs.tooltip', function (evt) {
-     
-     console.log('here',evt.target);
-    });
+    //set customer detail when show modial dialog
+    $('#detailModal').on('show.bs.modal', evt => app.setDetail(evt.relatedTarget));
   };
 
   // initial the app, main entry of app.
